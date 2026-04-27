@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow - Login & Register</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .form-box {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px 35px;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #555;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .password-strength {
+      margin-top: 6px;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .password-strength.show {
+      display: block;
+    }
+
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      background: #f44336;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    .strength-bar.weak {
+      width: 33%;
+      background: #f44336;
+    }
+
+    .strength-bar.medium {
+      width: 66%;
+      background: #ff9800;
+    }
+
+    .strength-bar.strong {
+      width: 100%;
+      background: #4caf50;
+    }
+
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      display: none;
+      border-left: 4px solid #c62828;
+    }
+
+    .error-message.show {
+      display: block;
+      animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .success-message {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      display: none;
+      border-left: 4px solid #4caf50;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #f5f5f5;
+      color: #667eea;
+      margin-top: 0;
+    }
+
+    .btn-secondary:hover {
+      background: #eeeeee;
+    }
+
+    .toggle-form {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #999;
+    }
+
+    .toggle-form a {
+      color: #667eea;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .toggle-form a:hover {
+      text-decoration: underline;
+    }
+
+    .form-toggle {
+      display: none;
+    }
+
+    .form-toggle.active {
+      display: block;
+    }
+
+    .email-hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="form-box">
+    <div class="header">
+      <div class="logo">✓</div>
+      <h1 id="formTitle">Login</h1>
+      <p class="subtitle" id="formSubtitle">Access your tasks and manage productivity</p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" id="errorMessage"></div>
+    <div class="success-message" id="successMessage"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm" class="form-toggle active">
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" placeholder="example@gmail.com" required>
+          <div class="email-hint">Must be a Gmail account (@gmail.com)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <span id="loginBtnText">Login</span>
+          <span class="loading" id="loginLoading">
+            <span class="spinner"></span>
+          </span>
+        </button>
+      </form>
+
+      <div class="toggle-form">
+        Don't have an account? <a onclick="toggleForms()">Sign Up</a>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" class="form-toggle">
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="registerName">Full Name</label>
+          <input type="text" id="registerName" placeholder="Your name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="registerEmail">Email Address</label>
+          <input type="email" id="registerEmail" placeholder="example@gmail.com" required>
+          <div class="email-hint">Must be a Gmail account (@gmail.com)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" placeholder="Minimum 6 characters" onkeyup="checkPasswordStrength(event)">
+          <div class="password-strength" id="passwordStrength">
+            <div class="strength-bar"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="registerConfirmPassword">Confirm Password</label>
+          <input type="password" id="registerConfirmPassword" placeholder="Re-enter password">
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <span id="registerBtnText">Create Account</span>
+          <span class="loading" id="registerLoading">
+            <span class="spinner"></span>
+          </span>
+        </button>
+      </form>
+
+      <div class="toggle-form">
+        Already have an account? <a onclick="toggleForms()">Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Check if already logged in
+window.addEventListener('load', () => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    window.location.href = 'dashboard.html';
+  }
+});
+
+function toggleForms() {
+  document.getElementById('loginForm').classList.toggle('active');
+  document.getElementById('registerForm').classList.toggle('active');
+
+  const title = document.getElementById('formTitle');
+  const subtitle = document.getElementById('formSubtitle');
+
+  if (document.getElementById('loginForm').classList.contains('active')) {
+    title.textContent = 'Login';
+    subtitle.textContent = 'Access your tasks and manage productivity';
+  } else {
+    title.textContent = 'Create Account';
+    subtitle.textContent = 'Join TaskFlow and start managing tasks';
+  }
+
+  clearMessages();
+}
+
+function clearMessages() {
+  const errorMsg = document.getElementById('errorMessage');
+  const successMsg = document.getElementById('successMessage');
+  errorMsg.classList.remove('show');
+  successMsg.classList.remove('show');
+}
+
+function showError(message) {
+  const errorMsg = document.getElementById('errorMessage');
+  errorMsg.textContent = message;
+  errorMsg.classList.add('show');
+  setTimeout(() => errorMsg.classList.remove('show'), 5000);
+}
+
+function showSuccess(message) {
+  const successMsg = document.getElementById('successMessage');
+  successMsg.textContent = message;
+  successMsg.classList.add('show');
+}
+
+function checkPasswordStrength(event) {
+  const password = event.target.value;
+  const strengthBar = document.getElementById('passwordStrength');
+  const bar = strengthBar.querySelector('.strength-bar');
+
+  if (!password) {
+    strengthBar.classList.remove('show');
+    return;
+  }
+
+  strengthBar.classList.add('show');
+
+  if (password.length < 6) {
+    bar.className = 'strength-bar weak';
+  } else if (password.length < 10 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+    bar.className = 'strength-bar medium';
+  } else {
+    bar.className = 'strength-bar strong';
+  }
+}
+
+function validateGmail(email) {
+  const gmailRegex = /^[^\s@]+@gmail\.com$/;
+  return gmailRegex.test(email);
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  clearMessages();
+
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  // Validate Gmail
+  if (!validateGmail(email)) {
+    showError('❌ Please enter a valid Gmail address (@gmail.com)');
+    return;
+  }
+
+  if (!password || password.length < 6) {
+    showError('❌ Password must be at least 6 characters');
+    return;
+  }
+
+  // Show loading
+  document.getElementById('loginBtnText').style.display = 'none';
+  document.getElementById('loginLoading').style.display = 'inline';
+
+  try {
+    const response = await fetch('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userEmail', data.user.email);
+      localStorage.setItem('userName', data.user.name);
+      showSuccess('✅ Login successful! Redirecting...');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1500);
+    } else {
+      showError('❌ ' + (data.error || 'Login failed'));
+    }
+  } catch (error) {
+    showError('❌ Connection error. Please try again.');
+    console.error('Login error:', error);
+  }
+
+  // Hide loading
+  document.getElementById('loginBtnText').style.display = 'inline';
+  document.getElementById('loginLoading').style.display = 'none';
+}
+
+async function handleRegister(event) {
+  event.preventDefault();
+  clearMessages();
+
+  const name = document.getElementById('registerName').value.trim();
+  const email = document.getElementById('registerEmail').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+  // Validate name
+  if (!name || name.length < 2) {
+    showError('❌ Please enter a valid name');
+    return;
+  }
+
+  // Validate Gmail
+  if (!validateGmail(email)) {
+    showError('❌ Please enter a valid Gmail address (@gmail.com)');
+    return;
+  }
+
+  // Validate password
+  if (!password || password.length < 6) {
+    showError('❌ Password must be at least 6 characters');
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    showError('❌ Passwords do not match');
+    return;
+  }
+
+  // Show loading
+  document.getElementById('registerBtnText').style.display = 'none';
+  document.getElementById('registerLoading').style.display = 'inline';
+
+  try {
+    const response = await fetch('/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userEmail', data.user.email);
+      localStorage.setItem('userName', data.user.name);
+      showSuccess('✅ Account created successfully! Redirecting...');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1500);
+    } else {
+      showError('❌ ' + (data.error || 'Registration failed'));
+    }
+  } catch (error) {
+    showError('❌ Connection error. Please try again.');
+    console.error('Registration error:', error);
+  }
+
+  // Hide loading
+  document.getElementById('registerBtnText').style.display = 'inline';
+  document.getElementById('registerLoading').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
+  window.location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>

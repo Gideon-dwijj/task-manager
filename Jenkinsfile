@@ -16,20 +16,20 @@ pipeline {
 
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/Gideon-dwijj/task-manager.git'
+                git branch: 'main', url: 'https://github.com/Gideon-dwijj/task-manager.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'echo "Building Docker Image..."'
+                echo "Building Docker Image..."
                 sh 'docker build -t $APP_NAME .'
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                sh 'echo "Stopping old container if exists..."'
+                echo "Stopping old container if exists..."
                 sh 'docker stop $CONTAINER_NAME || true'
                 sh 'docker rm $CONTAINER_NAME || true'
             }
@@ -37,8 +37,8 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                sh 'echo "Starting new container..."'
-                sh 'docker run -d -p 3000:3000 --name $CONTAINER_NAME $APP_NAME'
+                echo "Starting new container..."
+                sh 'docker run -d --restart=always -p 3000:3000 --name $CONTAINER_NAME $APP_NAME'
             }
         }
     }
